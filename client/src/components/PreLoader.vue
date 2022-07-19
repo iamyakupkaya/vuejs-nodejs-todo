@@ -18,7 +18,6 @@ export default {
   created() {
     //this will trigger out counter for preloader
     let interval = setInterval(() => {
-      console.log(this);
       if (this.counter < 100) {
         this.counter++;
       } else {

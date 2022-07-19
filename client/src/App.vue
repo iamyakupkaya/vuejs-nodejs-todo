@@ -1,25 +1,32 @@
 <template>
-  <button class="main-app__button">
-    <span>TR</span>
+  <button
+    @click="
+      language == 'turkish' ? (language = 'english') : (language = 'turkish')
+    "
+    class="main-app__button"
+  >
+    <span>{{ language == "turkish" ? "EN" : "TR" }}</span>
     <font-awesome-icon icon="fa-solid fa-language" />
   </button>
   <PreLoader v-if="showPreloader" />
-  <TodoInput />
+  <RegisterTodo :language="language" />
 
   <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
 </template>
 
 <script>
 import PreLoader from "./components/PreLoader.vue";
-import TodoInput from "./components/TodoInput.vue";
+import RegisterTodo from "./pages/RegisterTodo.vue";
 
 export default {
   name: "App",
   data: function () {
     return {
       showPreloader: true,
+      language: "english",
     };
   },
+
   created() {
     //after 2 seconds, showPreloader will be false so we can not see preloader compo anymore.
     setTimeout(() => {
@@ -29,11 +36,12 @@ export default {
 
   components: {
     PreLoader,
-    TodoInput,
+    RegisterTodo,
   },
 };
 </script>
 
+/* background-color: #e0e0e0; */
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -41,8 +49,14 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
-  background-color: #e0e0e0;
+  margin-top: 75px;
+  background: rgb(255, 0, 219);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 219, 1) 0%,
+    rgba(0, 255, 239, 1) 50%,
+    rgba(0, 255, 149, 1) 100%
+  );
 }
 .main-app__button {
   position: fixed;
