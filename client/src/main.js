@@ -15,6 +15,7 @@ import {
   faDownLeftAndUpRightToCenter,
   faHourglass,
   faCircleCheck,
+  faCloudArrowUp,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
@@ -26,6 +27,7 @@ library.add([
   faDownLeftAndUpRightToCenter,
   faHourglass,
   faCircleCheck,
+  faCloudArrowUp
 ]);
 
 createApp(App).component("font-awesome-icon", FontAwesomeIcon).mount("#app");

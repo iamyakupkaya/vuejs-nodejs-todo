@@ -55,7 +55,7 @@ export default {
   transform: translate(-50%, -50%);
   font-size: 10rem;
   font-weight: 900;
-  color: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.1);
 }
 
 .pre-loader__counter {
