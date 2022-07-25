@@ -6,8 +6,8 @@
      <div class="todo-app__select">
        <span :style="{'margin-right':'10px', 'font-weight':'bold', 'margin-bottom':'10px'}">{{ language == "turkish" ? "Kategori" : "Category" }}:</span>
 
-    <select v-model="selected" v-bind:Category="(selected.toLowerCase() == 'other') || (selected.toLowerCase() == 'diğer') ? todoInfo.category=otherCategory : todoInfo.category=selected ">
-      <option disabled value="">
+    <select v-model.lazy="selected" v-bind:Category="((selected.toLowerCase() == 'other') || (selected.toLowerCase() == 'diğer')) ? todoInfo.otherCategory=true : todoInfo.category=selected ">
+      <option selected disabled value="">
         {{
           language == "turkish" ? "Lütfen birini seçiniz" : "Please select one"
         }}
@@ -16,10 +16,11 @@
         {{ language == "turkish" ? categoryTR[i - 1] : categoryEN[i - 1] }}
       </option>
     </select>
+
      </div>
 
     <div>
-      <input class="todo-app__file-input" ref="IMGfile" type="file" style="display:none;" @change="onChange($event)" />
+    <input class="todo-app__file-input" ref="IMGfile" type="file" style="display:none;" @change="onChange($event)" />
     <button class="todo-app__file-button" type="button" @click="$refs.IMGfile.click()">
     {{language == 'turkish'
             ? '**Resim Yükle'
@@ -31,12 +32,23 @@
 
     <div
       v-if="
-        selected.toLowerCase() == 'other' || selected.toLowerCase() == 'diğer'
+        (todoInfo.otherCategory || updateFromStore.otherCategory)
       "
     >
       <br />
       <input
-      v-model="otherCategory"
+      v-if="updateFromStore.otherCategory && !selected"
+      v-model.lazy.trim="updateFromStore.category"
+        class="todo-app__input"
+        :placeholder="
+          language == 'turkish'
+            ? 'Lütfen kategori başlığı giriniz'
+            : 'Please enter the category title'
+        "
+      />
+      <input
+      v-else
+      v-model.lazy.trim="otherCategory"
         class="todo-app__input"
         :placeholder="
           language == 'turkish'
@@ -46,9 +58,19 @@
       />
     </div>
       <br />
-    <div>
+    <div >
+  <!--     <input
+        v-if="updateFromStore.updateState"
+        v-model.trim.lazy="updateFromStore.title"
+        class="todo-app__input"
+        :placeholder="
+          language == 'turkish' ? 'Yapılacak konu başlığı' : 'Title of todo'
+        "
+      /> -->
+
+<!-- ***** TITLE INPUT ****** -->
       <input
-        v-model="todoInfo.title"
+        v-model.trim.lazy="valTitle"
         class="todo-app__input"
         :placeholder="
           language == 'turkish' ? 'Yapılacak konu başlığı' : 'Title of todo'
@@ -56,8 +78,9 @@
       />
       <br />
       <br />
+<!-- ****** CONTENT TEXTAREA ******-->  
       <textarea
-        v-model="todoInfo.content"
+        v-model.lazy.trim="valContent"
 
         rows="4"
         class="todo-app__textarea todo-app__input"
@@ -72,26 +95,27 @@
 
     <div :style="{ display: 'flex' }" class="todo-app__degree-container">
       <label :style="{ 'background-color': 'rgba(255, 0, 0, 1)' }">
-        <input v-model="todoInfo.degree" type="radio" name="light"   value="high"/>
+        <input v-model="valDegree" type="radio" name="light"   value="high" :checked="valDegree.toLowerCase() === 'high' ? true : false" />
         <span>{{ language == "turkish" ? "YÜKSEK" : "HIGH" }}</span>
         <font-awesome-icon icon="fa-solid fa-angles-up" />
       </label>
       <label :style="{ 'background-color': 'rgba(255, 205, 0, 1)' }">
-        <input v-model="todoInfo.degree" type="radio" name="light"  value="medium" />
+        <input v-model="valDegree" type="radio" name="light"  value="medium" :checked="valDegree.toLowerCase() === 'medium' ? true : false"  />
         <span>{{ language == "turkish" ? "ORTA" : "MEDIUM" }}</span>
         <font-awesome-icon
           icon="fa-solid fa-down-left-and-up-right-to-center"
         />
       </label>
       <label :style="{ 'background-color': 'rgba(16, 193, 2, 1)' }">
-        <input v-model="todoInfo.degree" type="radio" name="light" value="low" checked />
+        <input v-model="valDegree" type="radio" name="light" value="low" :checked="valDegree.toLowerCase() === 'low' ? true : false" />
         <span>{{ language == "turkish" ? "DÜŞÜK" : "LOW" }}</span>
         <font-awesome-icon icon="fa-solid fa-angles-down" />
       </label>
     </div>
     <br />
-    <button @click="sendTodoInfo" class="todo-app__submit-button" type="submit">
-      <span>{{ language == "turkish" ? "EKLE" : "ADD" }}</span>
+    <button @click="addTodos" class="todo-app__submit-button" type="submit">
+      <span v-if="!updateFromStore.updateState">{{ language == "turkish" ? "EKLE" : "ADD" }}</span>
+      <span v-else>{{ language == "turkish" ? "GÜNCELLE" : "UPDATE" }}</span>
       <font-awesome-icon icon="fa-solid fa-plus" size="xl" />
     </button>
   <h6 style="padding-bottom:10px; color:red; font-weight:bold;">{{language == "turkish" ? "**:Tamamen opsiyonel / İsteğe bağlı" : "**: Totally optional / if you want to upload"}}</h6>
@@ -99,192 +123,215 @@
   </div>
   <hr class="todo-app__hr" />
   <hr class="todo-app__hr" />
- 
  </template>
 
-<script>
+<script >
 
+import { mapGetters } from 'vuex';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
-  data: function () {
-    return {
-      categoryTR: [
-        "Alışveriş",
-        "Okul",
-        "Yemek",
-        "Spor",
-        "Ders Çalışma",
-        "Diğer",
-      ],
-      categoryEN: [
-        "Shopping",
-        "School",
-        "Eating",
-        "Sport",
-        "Studying",
-        "Other",
-      ],
-      selected: "",
-      otherCategory:"",
-      todoInfo:{
-        title:"",
-        content:"",
-        category:"",
-        degree:"",
-        image:""
-      },
-    };
-  },
-  props: ["language"],
-  emits: ['saveTodoInfo'],
-  methods:{
-    onChange(e){
-      console.log("files", e.target.files)
-      const file = e.target.files[0];
-      console.log("My file:", file)
-      if(file){
-        this.todoInfo.image = URL.createObjectURL(file);
-        this.$refs.IMGfile.value = null;
-
-
-      }
-      console.log(this.todoInfo)
+    props: ["language"],
+    data: function () {
+      console.log(this.$store.state.todoList)
+      return {
+        categoryTR: [
+          "Alışveriş",
+          "Okul",
+          "Yemek",
+          "Spor",
+          "Ders Çalışma",
+          "Diğer",
+        ],
+        categoryEN: [
+          "Shopping",
+          "School",
+          "Eating",
+          "Sport",
+          "Studying",
+          "Other",
+        ],
+        selected: "",
+        otherCategory:"",
+        updateElement:{},
+        todoInfo:{
+          unique: uuidv4(),
+          title:"",
+          content:"",
+          category:"",
+          degree:"",
+          image:"",
+          otherCategory:false,
+        },
+        
+      };
     },
-    sendTodoInfo(){
-      console.log("bia an yuh dedim")
-      this.$emit('saveTodoInfo',this.todoInfo)
-      console.log(this.todoInfo.image)
-      console.log("Gönderildi bile.")
-      this.todoInfo.title="";
-      this.todoInfo.content = "";
-      this.todoInfo.category="";
-      this.todoInfo.image="";
-      this.otherCategory=""
-      this.selected= "";
-      this.degree=""
+    methods:{
+
+      //to upload a image
+      onChange(e){
+       
+        const file = e.target.files[0];
+        console.log("My file:", file)
+        if(file){ // if user select a file..
+          this.todoInfo.image = URL.createObjectURL(file);
+          this.$refs.IMGfile.value = "";
+          console.log("içeriiddeeee ib resim")
+
+        }
+         if(this.updateFromStore.updateState){ // if user update todo the user can select new pic to update
+          this.updateFromStore.image=URL.createObjectURL(file);
+        }
+        console.log(this.todoInfo)
+      },
+      // add new todo or after update editing old todo.
+      addTodos(){
+        if(this.updateFromStore.updateState){ // if updateState is true, it will update selected todo.
+          this.$store.commit("addNewTodo", {...this.updateFromStore, addState:"update", updateState:false})
+        }
+        else{
+          
+          if(this.selected.toLowerCase() == 'other' || this.selected.toLowerCase() == 'diğer'){
+            this.todoInfo.otherCategory=true;
+            this.todoInfo.category = this.otherCategory;
+          }
+          this.$store.commit("addNewTodo", {...this.todoInfo, addState:"add"}) /*we should use spread operator to cut the reffere num of object*/
+        /* because objects are mutables.. for this look at mutable and immutable topics kardeşimmm :)*/
+          this.todoInfo.title="";
+          this.todoInfo.content="";
+          this.todoInfo.otherCategory=false;
+          this.todoInfo.category="";
+          this.todoInfo.degree="";
+          this.todoInfo.image="";
+          
+        }
+      this.$store.commit("changeComponent", "TodoList")
+
+    },
+
+    },
+    computed:{
+    ...mapGetters(["allTodoList", "updateFromStore"]),
+    //valTitle will use in  title input to get data and set data in v-model.
+    valTitle:{
+        get () {
+        if (this.updateFromStore.updateState) {
+          return this.updateFromStore.title;
+        } 
+        else{
+          return this.todoInfo.title;
+        }
+      },
+      set (val) {
+        if (this.updateFromStore.updateState) {
+          this.updateFromStore.title = val
+        }
+        else{
+          this.todoInfo.title = val;
+        }
+      }
+    },
+    valContent:{
+        get () {
+        if (this.updateFromStore.updateState) {
+          return this.updateFromStore.content;
+        } 
+        else{
+          return this.todoInfo.content;
+        }
+      },
+      set (val) {
+        if (this.updateFromStore.updateState) {
+          this.updateFromStore.content = val
+        }
+        else{
+          this.todoInfo.content = val;
+        }
+      }
+    },
+    valDegree:{
+        get () {
+        if (this.updateFromStore.updateState) {
+          return this.updateFromStore.degree;
+        } 
+        else{
+          return this.todoInfo.degree;
+        }
+      },
+      set (val) {
+        if (this.updateFromStore.updateState) {
+          this.updateFromStore.degree = val
+        }
+        else{
+          this.todoInfo.degree = val;
+        }
+      }
+    },
+
+      
     }
-    
-  }
-};
+  };
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Splash&display=swap');
-.todo-app_title{
-font-family: 'Splash', cursive;
-font-weight:900;
-
-}
-.todo-app {
-  width: 50%;
-  min-width: 750px;
-  margin: 0 auto;
-  border-radius: 50px;
- 
-  background: #E0E0E0;
-box-shadow: inset 8px 8px 11px #6e6e6e,
-            inset -8px -8px 11px #ffffff;
-            background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 50%, rgba(224,222,222,0.5) 100%);
-}
-.todo-app__input {
-  width: 75%;
-  height: 2.5rem;
-  background-color: #e0e0e0;
-  border-radius: 20px;
-  border-width: 2px;
-  border-color: black;
-  color: black;
-  font-weight: 600;
-background: rgb(135,135,135);
-background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 50%, rgba(224,222,222,0.5) 100%);
-}
-
-.todo-app__textarea {
-  resize: vertical;
-  min-height: 100px;
-  max-height: 300px;
-  
-}
-.todo-app__degree-container label {
-  border-radius: 50px;
-  text-align: center;
-  width: 150px;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  flex-wrap: nowrap;
-  margin: 10px auto;
-  cursor: pointer;
-  position: relative;
-  font-weight: 600;
-  color: black;
-}
-.todo-app__degree-container label:first-child{
-  margin-left:125px;
-}
-.todo-app__degree-container label:last-child{
-  margin-right:125px;
-}
-.todo-app__degree-container input {
-  width: 20px;
-  height: 20px;
-
-  margin: auto 5px;
-}
-.todo-app__degree-container span {
-  margin-right: 15px;
-}
-
-.todo-app__submit-button {
-  width: 50%;
-  font-weight: 900;
-  height: 50px;
-  border-radius: 25px;
-  background-color: rgba(0, 17, 255, 0.5);
-  color: black;
-  margin-bottom: 10px;
-}
-.todo-app__submit-button span {
-  margin: 15px;
-}
-
-.todo-app__hr {
-  border: 1px solid red;
-  margin-bottom: 1rem;
-}
-.todo-app__file-button{
-  width: 250px;
-  height:50px;
-  border: 1px solid red;
-  border-radius:20px;
-  background-color:#C74545;
-  color:black;
-  font-weight:800;
-  margin-bottom:15px;
-
-}
-
-select{
-  width: 250px;
-  margin: 0 auto;
-  border:2px solid black;
-  border-radius: 50px;
-  color:black;
-  font-weight: 600;
-background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 100%);
-}
-
-.todo-app__select-file{
-  display:flex;
-  justify-content: space-evenly;
-  align-items: baseline;
-}
-.todo-app__select{  
-  padding-bottom: 25px;
-
-}
-
-
-
+@import "../css/styleRegisterTodo.css";
 </style>
+
+      /* valTitle:{
+        get () {
+        if (this.updatedTodoInfo.updateState) {
+          console.log("GET İÇERİSİ İF")
+          return this.updateElement.title;
+        } 
+        else{
+          console.log("GET İÇERİSİ ELSE")
+
+          return this.todoInfo.title;
+        }
+      },
+      set (val) {
+        if (this.updatedTodoInfo.updateState) {
+          console.log("SET İÇERİSİ İF")
+
+          this.updatedTodoInfo.title = val
+        }
+        else{
+          console.log("SET İÇERİSİ ELSE")
+
+          this.todoInfo.title = val;
+        }
+      }
+    } */
+
+
+    /* 
+
+
+    valTitle:{
+        get () {
+        if (this.$store.state.updateElement.updateState) {
+          console.log("GET İÇERİSİ İF")
+          return this.$store.state.updateElement.title;
+        } 
+        else{
+          console.log("GET İÇERİSİ ELSE")
+
+          return this.todoInfo.title;
+        }
+      },
+      set (val) {
+        if (this.$store.state.updateElement.updateState) {
+          console.log("SET İÇERİSİ İF")
+          this.$store.state.updateElement.title = val
+        }
+        else{
+          console.log("SET İÇERİSİ ELSE")
+
+          this.todoInfo.title = val;
+        }
+      }
+    }
+
+
+
+    */

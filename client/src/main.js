@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-
+import { store } from "./vuex/todoStore";
 /* import font awesome icon component */
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
@@ -16,6 +16,8 @@ import {
   faHourglass,
   faCircleCheck,
   faCloudArrowUp,
+  faTrashCan,
+  faSquarePen,
 } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
@@ -27,7 +29,14 @@ library.add([
   faDownLeftAndUpRightToCenter,
   faHourglass,
   faCircleCheck,
-  faCloudArrowUp
+  faCloudArrowUp,
+  faTrashCan,
+  faSquarePen,
 ]);
 
-createApp(App).component("font-awesome-icon", FontAwesomeIcon).mount("#app");
+const app = createApp(App);
+
+app.component("font-awesome-icon", FontAwesomeIcon);
+app.use(store);
+
+app.mount("#app");

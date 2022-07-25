@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Splash&display=swap');
+.todo-app_title{
+font-family: 'Splash', cursive;
+font-weight:900;
+
+}
+.todo-app {
+  width: 50%;
+  min-width: 750px;
+  margin: 0 auto;
+  border-radius: 50px;
+ 
+  background: #E0E0E0;
+box-shadow: inset 8px 8px 11px #6e6e6e,
+            inset -8px -8px 11px #ffffff;
+            background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 50%, rgba(224,222,222,0.5) 100%);
+}
+.todo-app__input {
+  width: 75%;
+  height: 2.5rem;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  border-width: 2px;
+  border-color: black;
+  color: black;
+  font-weight: 600;
+background: rgb(135,135,135);
+background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 50%, rgba(224,222,222,0.5) 100%);
+}
+
+.todo-app__textarea {
+  resize: vertical;
+  min-height: 100px;
+  max-height: 300px;
+  
+}
+.todo-app__degree-container label {
+  border-radius: 50px;
+  text-align: center;
+  width: 150px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin: 10px auto;
+  cursor: pointer;
+  position: relative;
+  font-weight: 600;
+  color: black;
+}
+.todo-app__degree-container label:first-child{
+  margin-left:125px;
+}
+.todo-app__degree-container label:last-child{
+  margin-right:125px;
+}
+.todo-app__degree-container input {
+  width: 20px;
+  height: 20px;
+
+  margin: auto 5px;
+}
+.todo-app__degree-container span {
+  margin-right: 15px;
+}
+
+.todo-app__submit-button {
+  width: 50%;
+  font-weight: 900;
+  height: 50px;
+  border-radius: 25px;
+  background-color: rgba(0, 17, 255, 0.5);
+  color: black;
+  margin-bottom: 10px;
+}
+.todo-app__submit-button span {
+  margin: 15px;
+}
+
+
+.todo-app__file-button{
+  width: 250px;
+  height:50px;
+  border: 1px solid red;
+  border-radius:20px;
+  background-color:#C74545;
+  color:black;
+  font-weight:800;
+  margin-bottom:15px;
+
+}
+
+select{
+  width: 250px;
+  margin: 0 auto;
+  border:2px solid black;
+  border-radius: 50px;
+  color:black;
+  font-weight: 600;
+background: linear-gradient(90deg, rgba(224,222,222,0.5) 0%, rgba(182,246,238,0.5802696078431373) 100%);
+}
+
+.todo-app__select-file{
+  display:flex;
+  justify-content: space-evenly;
+  align-items: baseline;
+  gap:15px;
+}
+.todo-app__select{  
+  padding-bottom: 25px;
+
+}

@@ -9,15 +9,15 @@
     <font-awesome-icon icon="fa-solid fa-language" />
   </button>
   <PreLoader v-if="showPreloader" />
-  <RegisterTodo key="1" v-if="selectedComponent == 'RegisterTodo' ? true : false" :language="language" @saveTodoInfo="TodoEmit"/>
-  <TodoList v-if="selectedComponent == 'TodoList' ? true : false" :language="language" :allTodoList="allTodoList"/>
+  <RegisterTodo key="1" v-if="selectedComponent == 'RegisterTodo' ? true : false" :language="language"/>
+  <TodoList v-if="selectedComponent == 'TodoList' ? true : false" :language="language"/>
 
   <!--  -->
 
 
   <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
 
-  <button @click="selectedComponent == 'RegisterTodo' ? selectedComponent='TodoList' : selectedComponent='RegisterTodo' " class="todo-app__show-list">
+  <button v-if="!updateFromStore.updateState" :class="{'buttonMargin': selectedComponent == 'TodoList'}" @click="changeComponent(selectedComponent == 'RegisterTodo' ? 'TodoList' : 'RegisterTodo')" class="todo-app__show-list">
     {{
       (language == "turkish" && selectedComponent == 'RegisterTodo')
         ? "TODO LİSTESİNİ GÖSTER"
@@ -28,13 +28,14 @@
         : "SHOW MY TO DO FORM"
     }}
   </button>
-
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import PreLoader from "./components/PreLoader.vue";
 import RegisterTodo from "./pages/RegisterTodo.vue";
 import TodoList from "./pages/TodoList.vue";
+
 
 export default {
   name: "App",
@@ -42,19 +43,9 @@ export default {
     return {
       showPreloader: true,
       language: "english",
-      selectedComponent:"RegisterTodo",
-      allTodoList:[]
     };
   },
-
-  methods:{
-    TodoEmit(event){
-      console.log("Bigiler alındı bile")
-      this.allTodoList[this.allTodoList.length] = {...event};
-      console.log(this.allTodoList)
-
-    }
-  },
+  
 
   created() {
     //after 2 seconds, showPreloader will be false so we can not see preloader compo anymore.
@@ -62,17 +53,27 @@ export default {
       this.showPreloader = false;
     }, 2000);
   },
+  methods:{
+    changeComponent(compName){
+      this.$store.commit("changeComponent", compName)
 
+    }
+  },
   components: {
     PreLoader,
     RegisterTodo,
-    TodoList
+    TodoList,
+    
   },
+    computed:{
+    ...mapGetters(["selectedComponent", "updateFromStore"])
+  }
+
 };
 </script>
 
-/* background-color: #e0e0e0; */
 <style>
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -80,12 +81,6 @@ export default {
   text-align: center;
   color:black;
   margin-top: 50px;
- /*  background: rgb(255, 0, 219);
-  background: linear-gradient(
-    90deg,
-    rgba(0, 255, 239, 1) 0%,
-    rgba(0, 255, 149, 1) 100%
-  ); */
   background-color:transparent;
   width:100vw;
   max-height:100vh;
@@ -120,5 +115,12 @@ box-shadow:  8px 8px 9px #5a5a5a,
   background-color: rgba(220, 0, 255, 1);
   transition: background-color 5 linear;
   
+}
+.buttonMargin{
+  margin-top:50px;
+}
+.todo-app__hr {
+  border: 1px solid red;
+  margin-bottom: 1rem;
 }
 </style>
