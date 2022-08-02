@@ -9,33 +9,13 @@
     <font-awesome-icon icon="fa-solid fa-language" />
   </button>
   <PreLoader v-if="showPreloader" />
-  <RegisterTodo key="1" v-if="selectedComponent == 'RegisterTodo' ? true : false" :language="language"/>
-  <TodoList v-if="selectedComponent == 'TodoList' ? true : false" :language="language"/>
 
-  <!--  -->
-
-
-  <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
-
-  <button v-if="!updateFromStore.updateState" :class="{'buttonMargin': selectedComponent == 'TodoList'}" @click="changeComponent(selectedComponent == 'RegisterTodo' ? 'TodoList' : 'RegisterTodo')" class="todo-app__show-list">
-    {{
-      (language == "turkish" && selectedComponent == 'RegisterTodo')
-        ? "TODO LİSTESİNİ GÖSTER"
-        : (language == "english" && selectedComponent == 'RegisterTodo') 
-        ? "SHOW MY TO DO LIST" 
-        : (language == "turkish" && selectedComponent == 'TodoList')
-        ? "TODO EKLEME FORMUNU GÖSTER"
-        : "SHOW MY TO DO FORM"
-    }}
-  </button>
+<router-view :language="language"></router-view>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import PreLoader from "./components/PreLoader.vue";
-import RegisterTodo from "./pages/RegisterTodo.vue";
-import TodoList from "./pages/TodoList.vue";
-
+import axios from "axios"
 
 export default {
   name: "App",
@@ -47,28 +27,20 @@ export default {
   },
   
 
-  created() {
+  async created() {
     //after 2 seconds, showPreloader will be false so we can not see preloader compo anymore.
     setTimeout(() => {
       this.showPreloader = false;
     }, 2000);
-  },
-  methods:{
-    changeComponent(compName){
-      this.$store.commit("changeComponent", compName)
-
-    }
+    await axios.get("http://localhost:3000/all-todos").then(response => {
+      this.$store.dispatch("getDatabases",response)
+    }).catch(err => console.log("EROR", err))
+    
   },
   components: {
     PreLoader,
-    RegisterTodo,
-    TodoList,
-    
-  },
-    computed:{
-    ...mapGetters(["selectedComponent", "updateFromStore"])
-  }
 
+  },
 };
 </script>
 
@@ -102,25 +74,28 @@ box-shadow:  8px 8px 9px #5a5a5a,
   margin: 10px;
 }
 
+.todo-app__hr {
+  border: 1px solid red;
+  margin-bottom: 1rem;
+}
+
 .todo-app__show-list {
+  position:fixed;
   background-color: rgba(220, 0, 255, 0.5);
-  width: 50%;
-  min-width: 750px;
-  height: 50px;
-  border-radius: 15px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
   color: black;
   font-weight: bold;
+  bottom:60px;
+  right:25px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
 }
 .todo-app__show-list:hover {
   background-color: rgba(220, 0, 255, 1);
   transition: background-color 5 linear;
   
-}
-.buttonMargin{
-  margin-top:50px;
-}
-.todo-app__hr {
-  border: 1px solid red;
-  margin-bottom: 1rem;
 }
 </style>

@@ -1,14 +1,17 @@
 import { createStore } from "vuex";
+import axios from "axios";
+import paginationStore from "./modules/paginationStore";
 
 export const store = createStore({
   state() {
-    console.log("STORE ÇALIŞIYOR::");
     return {
       todoList: [],
       allDoneTodo: [],
       updateElement: { updateState: false },
-      selectComponent: "RegisterTodo",
     };
+  },
+  modules: {
+    pagination:paginationStore,
   },
   /* our methods to change state. */
   mutations: {
@@ -18,40 +21,61 @@ export const store = createStore({
     //addNewTodo method will work for add new todo or update old todo
     addNewTodo(state, todo) {
       //JS Object Destructiring to take same part of object
-      const destructuredTodo = (({
+
+      const destructuredTodo = (({ unique, title, content, category, degree, image, completed, createAt }) => ({
         unique,
         title,
         content,
         category,
         degree,
         image,
-        otherCategory,
-        doneState,
-      }) => ({
-        unique,
-        title,
-        content,
-        category,
-        degree,
-        image,
-        otherCategory,
-        doneState,
+        completed,
+        createAt,
       }))(todo);
+      console.log("Destruc", destructuredTodo);
       if (todo.addState === "add") {
+        console.log("DESTRUCT", destructuredTodo);
+        const resp = axios
+          .post("http://localhost:3000/add-todo", destructuredTodo)
+          .then((response) => {
+            console.log("GELEN RESPONSE", response);
+          })
+          .catch((err) => {
+            console.log("GELEN ERROR:", err);
+          });
+        console.log("gelen resp", resp);
         state.todoList.push(destructuredTodo);
       } else if (todo.addState === "update") {
         state.todoList.push(destructuredTodo);
         state.updateElement = { updateState: false };
+        const resp = axios
+          .put("http://localhost:3000/update-todo/" + String(todo.unique), destructuredTodo)
+          .then((response) => {
+            console.log("GELEN RESPONSE", response);
+          })
+          .catch((err) => {
+            console.log("GELEN ERROR:", err);
+          });
+        console.log("DELETE OLAN TODO", resp);
       }
+      console.log("add List:", state);
     },
     //donetodo will work when user done todo
     doneTodo(state, todo) {
       const tempTodoList = state.todoList.filter((item) => {
         return todo.unique !== item.unique;
       });
-      console.log("update Todo:", todo);
       state.todoList = [...tempTodoList];
-      state.allDoneTodo = [{ ...todo }];
+      state.allDoneTodo.push({ ...todo });
+      const resp = axios
+        .put("http://localhost:3000/add-todo/" + String(todo.unique))
+        .then((response) => {
+          console.log("GELEN RESPONSE", response);
+        })
+        .catch((err) => {
+          console.log("GELEN ERROR:", err);
+        });
+      console.log("DONE OLAN TODO", resp);
     },
     //updateTodo will work when user update an old todo
 
@@ -64,7 +88,10 @@ export const store = createStore({
     },
     //DELETE will work for remove a todo
     todoDelete(state, todo) {
-      if (todo.doneState) {
+      console.log("GELEN TODO", todo);
+      console.log("State: ÖNCESİ", state.todoList);
+
+      if (todo.completed) {
         const temporalallDoneTodo = state.allDoneTodo.filter((item) => {
           return todo.unique !== item.unique;
         });
@@ -75,6 +102,16 @@ export const store = createStore({
         });
         state.todoList = [...temporalTodoList];
       }
+      const resp = axios
+        .delete("http://localhost:3000/add-todo/" + String(todo.unique))
+        .then((response) => {
+          console.log("GELEN RESPONSE", response);
+        })
+        .catch((err) => {
+          console.log("GELEN ERROR:", err);
+        });
+      console.log("DELETE OLAN TODO", resp);
+      console.log("State: SONRASI ", state.todoList);
     },
   },
   // getters will provide getting data in another compo. on store
@@ -82,9 +119,13 @@ export const store = createStore({
     allTodoList: (state) => state.todoList,
     doneTodoList: (state) => state.allDoneTodo,
     updateFromStore: (state) => state.updateElement,
-    selectedComponent: (state) => {
-      console.log("STOREEEE SELCTED COMPO");
-      return state.selectComponent;
+  },
+  actions: {
+    getDatabases: function (context, todos) {
+      console.log("TODOLARIM", todos);
+      todos.data.forEach((item) => {
+        item.completed === true ? context.state.allDoneTodo.push(item) : context.state.todoList.push(item);
+      });
     },
   },
 });
