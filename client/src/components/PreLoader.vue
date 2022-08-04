@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
 export default {
   name: "HelloWorld",
   data: function () {
@@ -24,6 +25,8 @@ export default {
         clearInterval(interval);
       }
     }, 1900 / 100);
+
+
   },
 };
 </script>

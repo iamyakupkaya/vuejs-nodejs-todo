@@ -7,6 +7,10 @@
             <button :class="{'active-button': activeCurrentPage === todo}" class="todo-app__pagination-current"  v-for="todo in activePaginationCount" :key="todo.unique" @click="presentPage(todo)">{{todo}}</button>
             <button :class="{'disable-button': activeCurrentPage === activePaginationCount}" class="todo-app__pagination-next" @click="nextPage">NEXT</button>
         </div>
+    <div>ALL TODOLOST: {{allTodoList.length}}</div>
+    <div>ALL TODOLOST: {{activeButton}}</div>
+
+
     </div>
     <div
     v-if="doneTodoList.length >5 && activeButton  === 'done'"
@@ -16,7 +20,9 @@
         <button :class="{'active-button': doneCurrentPage === todo}" class="todo-app__pagination-current"  v-for="todo in donePaginationCount" :key="todo.unique" @click="presentPage(todo)">{{todo}}</button>
         <button :class="{'disable-button': doneCurrentPage === donePaginationCount}" class="todo-app__pagination-next" @click="nextPage">NEXT</button>
     </div>
+
   </div>
+
 
 </template>
 
@@ -26,16 +32,21 @@ import { mapGetters } from "vuex";
 
 export default {
     data: function () {
+console.log("gelen Stor", this.$store)
+
         return {
 /*             activePaginationCount:0,
-            donePaginationCount:0,
-            activeCurrentPage:1,
-            doneCurrentPage:1 */
+            donePaginationCount:0, */
         }
     },
-    created() {
+      created() {
+console.log("gelen Stor2", this.$store.state.todoList[0])
+console.log("gelen Stor3", this.allTodoList)
+
+        
         let activePaginationCount = Math.ceil(this.allTodoList.length / 5)
         let donePaginationCount = Math.ceil(this.doneTodoList.length / 5)
+
         this.$store.commit("pagination/changeActivePaginationCount", activePaginationCount)
         this.$store.commit("pagination/changeDonePaginationCount", donePaginationCount)
     },
@@ -78,7 +89,6 @@ export default {
             }
         }
     },
-    emits:["activeCurrentPage", "doneCurrentPage"],
       computed:{
     /* burada mapGetters spread yaptık ki  kendi computedlarımızı da yazabilelim*/
     ...mapGetters({
@@ -91,6 +101,7 @@ export default {
 
     })
   },
+
 
 }
 </script>

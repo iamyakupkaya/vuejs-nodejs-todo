@@ -1,4 +1,3 @@
-
 export default {
   namespaced: true,
   state: {
@@ -26,6 +25,7 @@ export default {
       state.doneCurrentPage = donePresentPage;
     },
     changeActivePaginationCount(state, activePaginationCount) {
+      console.log("TODOLIST ŞİMDİLİK", activePaginationCount);
       state.activePaginationCount = activePaginationCount;
     },
     changeDonePaginationCount(state, donePaginationCount) {

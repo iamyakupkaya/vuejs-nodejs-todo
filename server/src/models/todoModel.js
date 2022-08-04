@@ -33,6 +33,10 @@ const todoSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    virtualID: {
+      type: String,
+      default: "",
+    },
     createAt: {
       type: String,
     },

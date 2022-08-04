@@ -35,6 +35,7 @@ export default {
     await axios.get("http://localhost:3000/all-todos").then(response => {
       this.$store.dispatch("getDatabases",response)
     }).catch(err => console.log("EROR", err))
+
     
   },
   components: {

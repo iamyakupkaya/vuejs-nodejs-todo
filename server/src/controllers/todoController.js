@@ -1,5 +1,7 @@
 //const { validationResult } = require("express-validator");
 const Todo = require("../models/todoModel");
+
+const { createTrelloCard, deleteTrelloCard, updateTrelloCard } = require("./trelloCard");
 //const bcrypt = require("bcrypt");
 
 const allTodos = async (req, res, next) => {
@@ -16,8 +18,10 @@ const createTodo = async (req, res, next) => {
   //const errors = validationResult(req);
   try {
     const addingTodo = new Todo(req.body);
-    await Todo.create(addingTodo);
-    //res.json(result);
+    const result = await Todo.create(addingTodo);
+    const cardData = await createTrelloCard(result);
+    await Todo.findByIdAndUpdate({ _id: result.id }, { virtualID: cardData.data.id }, { new: true });
+    res.json(result);
   } catch (error) {
     console.log("HATA..!", error.message);
     res.status(404).json({ message: error.message });
@@ -40,7 +44,9 @@ const deleteTodo = async (req, res, next) => {
   const urlID = req.params.id;
   try {
     const filter = { unique: urlID };
+    const todo = await Todo.find({ unique: urlID });
     await Todo.deleteOne(filter);
+    await deleteTrelloCard(todo[0]);
   } catch (error) {
     console.log("HATA..!", error.message);
     res.status(404).json({ message: error.message });
@@ -52,7 +58,8 @@ const updateTodo = async (req, res) => {
   try {
     const filter = { unique: urlID };
     const update = { ...req.body };
-    await Todo.findOneAndUpdate(filter, update);
+    const updatedTodo = await Todo.findOneAndUpdate(filter, update, { new: true });
+    await updateTrelloCard(updatedTodo);
   } catch (error) {
     console.log("HATA..!", error.message);
     res.status(404).json({ message: error.message });
