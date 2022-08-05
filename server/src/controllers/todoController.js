@@ -4,6 +4,9 @@ const Todo = require("../models/todoModel");
 const { createTrelloCard, deleteTrelloCard, updateTrelloCard } = require("./trelloCard");
 //const bcrypt = require("bcrypt");
 
+// **************** GETS METHODS *******************
+
+//Get all todos from database
 const allTodos = async (req, res, next) => {
   try {
     const result = await Todo.find({});
@@ -14,6 +17,7 @@ const allTodos = async (req, res, next) => {
   }
 };
 
+// Create a new todo
 const createTodo = async (req, res, next) => {
   //const errors = validationResult(req);
   try {
@@ -28,6 +32,7 @@ const createTodo = async (req, res, next) => {
   }
 };
 
+// turn a todo to "done"
 const doneTodo = async (req, res, next) => {
   const urlID = req.params.id;
   try {
@@ -40,6 +45,7 @@ const doneTodo = async (req, res, next) => {
   }
 };
 
+// delete a todo
 const deleteTodo = async (req, res, next) => {
   const urlID = req.params.id;
   try {
@@ -53,6 +59,7 @@ const deleteTodo = async (req, res, next) => {
   }
 };
 
+// update a todo's all ınformations
 const updateTodo = async (req, res) => {
   const urlID = req.params.id;
   try {

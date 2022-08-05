@@ -7,9 +7,6 @@
             <button :class="{'active-button': activeCurrentPage === todo}" class="todo-app__pagination-current"  v-for="todo in activePaginationCount" :key="todo.unique" @click="presentPage(todo)">{{todo}}</button>
             <button :class="{'disable-button': activeCurrentPage === activePaginationCount}" class="todo-app__pagination-next" @click="nextPage">NEXT</button>
         </div>
-    <div>ALL TODOLOST: {{allTodoList.length}}</div>
-    <div>ALL TODOLOST: {{activeButton}}</div>
-
 
     </div>
     <div
@@ -32,7 +29,6 @@ import { mapGetters } from "vuex";
 
 export default {
     data: function () {
-console.log("gelen Stor", this.$store)
 
         return {
 /*             activePaginationCount:0,
@@ -40,10 +36,6 @@ console.log("gelen Stor", this.$store)
         }
     },
       created() {
-console.log("gelen Stor2", this.$store.state.todoList[0])
-console.log("gelen Stor3", this.allTodoList)
-
-        
         let activePaginationCount = Math.ceil(this.allTodoList.length / 5)
         let donePaginationCount = Math.ceil(this.doneTodoList.length / 5)
 
@@ -67,7 +59,6 @@ console.log("gelen Stor3", this.allTodoList)
         presentPage(todo){
 
             if(this.activeButton === 'active'){
-                console.log("GELEN TODO ACTİVE", todo)
                 this.$store.commit("pagination/changeActivePresentPage", todo)
 
             }

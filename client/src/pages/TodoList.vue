@@ -52,9 +52,6 @@
     <!-- <router-link class="todo-app__show-list" to="/">TODO FORM</router-link> -->
     <button @click="goBackButton" class="todo-app__show-list" >GERİ DÖN</button>
   <router-view></router-view>
-  <div>ACTİVE CURRENT:{{activeCurrentPage}}</div>
-  <div>DONE CURRENT:{{doneCurrentPage}}</div>
-  <div>ACTİVE PAGINATION: {{activePaginationCount}}</div>
 </template>
 
 <script>
@@ -68,9 +65,6 @@ export default {
       defaultImage:IMGDefault,
       activeButton:"active",
     }
-  },
-  mounted() {
-    console.log("Mounted todos:", this.allTodoList)
   },
   props:["language"],
   methods:{
@@ -133,106 +127,8 @@ export default {
 </script>
 
 <style scoped>
+@import "../css/styleTodoList.css";
 
-.todo-app__active-buttons {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  background-color: #e0e0e0;
-  position:fixed;
-  top: 0px;
-  left: 0;
-  z-index:99;
-  padding-top:25px;
-  padding-bottom:15px;
-}
-
-.todo-app__active-buttons button {
-  background-color: rgba(220, 0, 255, 0.5);
-  width: 150px;
-  height: 40px;
-  border-radius: 15px;
-  color: black;
-  font-weight: bold;
-}
-.todo-app__active{
-   background-color: red !important;
-}
-.todo-app__card-container{
-  display:grid;
-  margin-top:0px;
-  grid-template-columns: repeat(auto-fill, minmax(500px, 0.75fr));
-  gap:2.5rem;
-  margin-left:25px;
-  margin-right:25px;
-  padding-bottom:300px;
-
-}
-
-.todo-app__card{
-  display:flex;
-  flex-direction: column;
-    border-radius: 30px;
-background: #e0e0e0;
-box-shadow:  10px 10px 12px #5a5a5a,
-             -10px -10px 12px #ffffff;
-}
-
-.todo-app__card-image{
-  width: 350px;
-  min-height: 350px;
-  margin:0 auto;
-  margin-top:10px;
-  margin-bottom:10px;
-
-}
-
-.todo-app__card-image img{
-  width: 350px;
-  max-height: 350px;
-  margin:0 auto;
-  margin-top:10px;
-
-}
-.todo-app__card-content{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height:100%;
-  margin-top:10px;
-
-
-}
-.todo-app__card-content-wrap{
-
-    white-space: wrap;
-      word-wrap: break-word;
-  word-break: break-all;
-
-
-
-
-}
-.todo-app__card-buttons{
-  display:flex;
-  justify-content: space-evenly;
-  align-items:flex-end;
-  margin-top:10px;
-}
-.todo-app__card-buttons button{
-  width:150px;
-  border-radius:15px;
-  height:35px;
-  box-shadow:  8px 8px 9px #5a5a5a,
-             -8px -8px 9px #ffffff;
-  color: black;
-  font-weight: bold;
-  margin-bottom:10px;
-}
-.todo-app__active-buttons-done {
-  justify-content: center;
-}
 </style>
 
 

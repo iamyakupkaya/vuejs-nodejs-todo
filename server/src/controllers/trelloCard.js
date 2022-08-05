@@ -1,10 +1,8 @@
 const axios = require("axios").default;
 
+// CREATE A TRELLO CARD
 const createTrelloCard = async (result) => {
-  const APIKey = "9c53c078a6a34ea3df76fac6362852b9";
-  const APIToken = "c139f5861c4b03e33fa0fada9a310cfa41e61b5b2d982f8bccb58d3b60f75e59";
-  const idList = "62ebb7cd60057a20b6c8b134";
-  const URL = `https://api.trello.com/1/cards?idList=${idList}&key=${APIKey}&token=${APIToken}`;
+  const URL = `https://api.trello.com/1/cards?idList=${process.env.ID_LIST}&key=${process.env.API_KEY}&token=${process.env.API_TOKEN}`;
   const cardData = await axios.post(URL, {
     name: result.title,
     desc: result.content,
@@ -13,20 +11,18 @@ const createTrelloCard = async (result) => {
   return cardData;
 };
 
+// DELETE THE TRELLO CARD WHICH GIVEN THE ID NUM.
 const deleteTrelloCard = async (todo) => {
-  const APIKey = "9c53c078a6a34ea3df76fac6362852b9";
-  const APIToken = "c139f5861c4b03e33fa0fada9a310cfa41e61b5b2d982f8bccb58d3b60f75e59";
   const CardID = todo.virtualID;
-  const URL = `https://api.trello.com/1/cards/${CardID}?key=${APIKey}&token=${APIToken}`;
+  const URL = `https://api.trello.com/1/cards/${CardID}?key=${process.env.API_KEY}&token=${process.env.API_TOKEN}`;
   const cardData = await axios.delete(URL);
   return cardData;
 };
 
+// UPDATE THE TRELLO CARD WHICH GIVEN THE ID NUM.
 const updateTrelloCard = async (todo) => {
-  const APIKey = "9c53c078a6a34ea3df76fac6362852b9";
-  const APIToken = "c139f5861c4b03e33fa0fada9a310cfa41e61b5b2d982f8bccb58d3b60f75e59";
   const CardID = todo.virtualID;
-  const URL = `https://api.trello.com/1/cards/${CardID}?key=${APIKey}&token=${APIToken}`;
+  const URL = `https://api.trello.com/1/cards/${CardID}?key=${process.env.API_KEY}&token=${process.env.API_TOKEN}`;
   const cardData = await axios.put(URL, {
     name: todo.title,
     desc: todo.content,

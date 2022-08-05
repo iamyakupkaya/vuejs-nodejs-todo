@@ -11,7 +11,7 @@ export const store = createStore({
     };
   },
   modules: {
-    pagination:paginationStore,
+    pagination: paginationStore,
   },
   /* our methods to change state. */
   mutations: {
@@ -22,6 +22,11 @@ export const store = createStore({
     addNewTodo(state, todo) {
       //JS Object Destructiring to take same part of object
 
+     /*  const destructuredTodo = ((a) => (
+        console.log(a)
+         ))("todo");
+         >>>>> todo */
+         
       const destructuredTodo = (({ unique, title, content, category, degree, image, completed, createAt }) => ({
         unique,
         title,
@@ -31,11 +36,9 @@ export const store = createStore({
         image,
         completed,
         createAt,
-      }))(todo);
-      console.log("Destruc", destructuredTodo);
+      }))(todo); //Arrow IIEF
       if (todo.addState === "add") {
-        console.log("DESTRUCT", destructuredTodo);
-        const resp = axios
+        axios
           .post("http://localhost:3000/add-todo", destructuredTodo)
           .then((response) => {
             console.log("GELEN RESPONSE", response);
@@ -43,12 +46,11 @@ export const store = createStore({
           .catch((err) => {
             console.log("GELEN ERROR:", err);
           });
-        console.log("gelen resp", resp);
         state.todoList.push(destructuredTodo);
       } else if (todo.addState === "update") {
         state.todoList.push(destructuredTodo);
         state.updateElement = { updateState: false };
-        const resp = axios
+        axios
           .put("http://localhost:3000/update-todo/" + String(todo.unique), destructuredTodo)
           .then((response) => {
             console.log("GELEN RESPONSE", response);
@@ -56,9 +58,7 @@ export const store = createStore({
           .catch((err) => {
             console.log("GELEN ERROR:", err);
           });
-        console.log("DELETE OLAN TODO", resp);
       }
-      console.log("add List:", state);
     },
     //donetodo will work when user done todo
     doneTodo(state, todo) {
@@ -67,7 +67,7 @@ export const store = createStore({
       });
       state.todoList = [...tempTodoList];
       state.allDoneTodo.push({ ...todo });
-      const resp = axios
+      axios
         .put("http://localhost:3000/add-todo/" + String(todo.unique))
         .then((response) => {
           console.log("GELEN RESPONSE", response);
@@ -75,10 +75,9 @@ export const store = createStore({
         .catch((err) => {
           console.log("GELEN ERROR:", err);
         });
-      console.log("DONE OLAN TODO", resp);
     },
     //updateTodo will work when user update an old todo
-
+    // when we update a todo we delete it on front-end aftere update we add a new todo with updated info
     updateTodo(state, todo) {
       state.updateElement = { updateState: true, ...todo };
       const temporalTodoList = state.todoList.filter((item) => {
@@ -88,9 +87,6 @@ export const store = createStore({
     },
     //DELETE will work for remove a todo
     todoDelete(state, todo) {
-      console.log("GELEN TODO", todo);
-      console.log("State: ÖNCESİ", state.todoList);
-
       if (todo.completed) {
         const temporalallDoneTodo = state.allDoneTodo.filter((item) => {
           return todo.unique !== item.unique;
@@ -102,7 +98,8 @@ export const store = createStore({
         });
         state.todoList = [...temporalTodoList];
       }
-      const resp = axios
+      // after delete on front-end also delete from database
+      axios
         .delete("http://localhost:3000/add-todo/" + String(todo.unique))
         .then((response) => {
           console.log("GELEN RESPONSE", response);
@@ -110,8 +107,6 @@ export const store = createStore({
         .catch((err) => {
           console.log("GELEN ERROR:", err);
         });
-      console.log("DELETE OLAN TODO", resp);
-      console.log("State: SONRASI ", state.todoList);
     },
   },
   // getters will provide getting data in another compo. on store
@@ -122,7 +117,6 @@ export const store = createStore({
   },
   actions: {
     getDatabases: function (context, todos) {
-      console.log("TODOLARIM", todos);
       todos.data.forEach((item) => {
         item.completed === true ? context.state.allDoneTodo.push(item) : context.state.todoList.push(item);
       });

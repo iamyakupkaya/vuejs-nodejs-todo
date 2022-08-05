@@ -9,7 +9,6 @@
     <font-awesome-icon icon="fa-solid fa-language" />
   </button>
   <PreLoader v-if="showPreloader" />
-
 <router-view :language="language"></router-view>
 </template>
 
@@ -27,11 +26,13 @@ export default {
   },
   
 
-  async created() {
+  async created(){
     //after 2 seconds, showPreloader will be false so we can not see preloader compo anymore.
     setTimeout(() => {
       this.showPreloader = false;
     }, 2000);
+
+    //
     await axios.get("http://localhost:3000/all-todos").then(response => {
       this.$store.dispatch("getDatabases",response)
     }).catch(err => console.log("EROR", err))

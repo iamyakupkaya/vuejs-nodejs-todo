@@ -3,13 +3,12 @@ const router = require("express").Router();
  */
 const { createTodo, allTodos, doneTodo, deleteTodo, updateTodo } = require("../controllers/todoController");
 
-//GETs
-/*  router.get("/all-todos", allTodos);
- */
 router.post("/add-todo", createTodo);
 
+//UPDATE A TODO JUST FOR "DONE"
 router.put("/add-todo/:id", doneTodo);
 
+// UPDATE A TODO WITH ALL INFORTMATIONS ABOUT THAT TODO
 router.put("/update-todo/:id", updateTodo);
 
 router.delete("/add-todo/:id", deleteTodo);

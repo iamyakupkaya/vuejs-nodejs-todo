@@ -209,7 +209,6 @@ export default {
       onChange(e){
         const imagesType = ["image/apng", "image/avif", "image/gif","image/jpeg", "image/png", "image/svg+xml", "image/webp" ]
         const file = e.target.files[0];
-        console.log("myfile", file)
         if(imagesType.includes(file.type)){
           if(file){ // if user select a file..
           this.todoInfo.image = URL.createObjectURL(file);

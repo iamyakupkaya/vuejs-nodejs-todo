@@ -18,14 +18,12 @@ export default {
       state.doneCurrentPage += currentPage;
     },
     changeActivePresentPage(state, activePresentPage) {
-      console.log("ACTİVE PAGE", activePresentPage);
       state.activeCurrentPage = activePresentPage;
     },
     changeDonePresentPage(state, donePresentPage) {
       state.doneCurrentPage = donePresentPage;
     },
     changeActivePaginationCount(state, activePaginationCount) {
-      console.log("TODOLIST ŞİMDİLİK", activePaginationCount);
       state.activePaginationCount = activePaginationCount;
     },
     changeDonePaginationCount(state, donePaginationCount) {
